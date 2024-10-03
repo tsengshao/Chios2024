@@ -84,11 +84,14 @@ def determine_longest_stable_step(method, initial_state, t_max, sigma, beta, rho
     return longest_stable_step
 
 # solve jac
-jac = [ [-sigma, sigma, 0], \
-        [1, -1, -np.sqrt(beta*(rho-1))], \
-        [np.sqrt(beta*(rho-1)), np.sqrt(beta*(rho-1)), -beta],\
+x, y, z = (0, 0, 0)
+x, y, z = (np.sqrt(beta*(rho-1)), np.sqrt(beta*(rho-1)), rho-1)
+jac = [ [-sigma, sigma,  0], \
+        [ rho-z,    -1, -1*x], \
+        [     y,     x, -beta],\
       ]
 evalue = eigvals(jac)
+print('(x,y,z)=',(x,y,z))
 print('jac:')
 print(np.array(jac))
 print('the eigen value is :',evalue)
@@ -177,12 +180,13 @@ fig, axs = plt.subplots(3, 1, figsize=(6, 10), sharex=True)
 # Euler method plots
 axis_name=['x','y','z']
 for i in range(3):
-  axs[i].plot(time_sci, states_sci[:, i], label='Sci')
-  axs[i].plot(time_euler, states_euler[:, i], label='Euler')
-  axs[i].plot(time_rk4,   states_rk4[:, i], label='RK4')
+  #axs[i].plot(time_sci, states_sci[:, i], label='Sci')
+  axs[i].plot(time_euler, states_euler[:, i], label=f'Euler ({dt_euler})', c='C0')
+  axs[i].plot(time_rk4,   states_rk4[:, i], label=f'RK4 ({dt_rk4})', c='C1')
   axs[i].set_title(f'{axis_name[i]} vs time')
   axs[i].set_ylim(ylim_min[i], ylim_max[i])
   axs[i].legend()
+plt.savefig('./fig_q2_compare.png',dpi=250)
 
 plt.show()
 
@@ -193,18 +197,18 @@ fig = plt.figure(figsize=(10, 7))
 ax = fig.add_subplot(111, projection='3d')
 
 # Plot the trajectory from RK4 (since it's more accurate)
-ax.plot(states_sci[:, 0], \
-        states_sci[:, 1], \
-        states_sci[:, 2], \
-        color='C0',label='sci')
+#ax.plot(states_sci[:, 0], \
+#        states_sci[:, 1], \
+#        states_sci[:, 2], \
+#        color='C0',label='sci')
 ax.plot(states_euler[:, 0], \
         states_euler[:, 1], \
         states_euler[:, 2], \
-        color='C1',label='Euler')
+        color='C0',label=f'Euler ({dt_euler})')
 ax.plot(states_rk4[:, 0], \
         states_rk4[:, 1], \
         states_rk4[:, 2], \
-        color='C2',label='RK4')
+        color='C1',label=f'RK4 ({dt_rk4})')
 plt.legend()
 
 # Labels and title
@@ -212,6 +216,7 @@ ax.set_title('Butterfly Effect (Lorenz System) - Euler/RK4 Method')
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('Z')
+plt.savefig('./fig_q2_butterfly.png',dpi=250)
 
 plt.show()
 
